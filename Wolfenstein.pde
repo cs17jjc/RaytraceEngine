@@ -121,6 +121,8 @@ PImage getSeg(PVector p1, PVector p2)
     }
   }
   //println(ClearX + " : " + ClearY);
+  if(ClearX == 0 && ClearY == 1)
+  {
     boolean EndSeg = false;
     PVector TopPoint = p1.copy();
     while(EndSeg == false)
@@ -130,14 +132,13 @@ PImage getSeg(PVector p1, PVector p2)
        EndSeg = true;
       }
       else{
-        if(ClearX == 0 && ClearY == 1)
-        {
-         TopPoint.y --;
-        }
+       TopPoint.y --; 
       }
     }
     println(p1.y - TopPoint.y);
     img = Map.get((int)p1.x,(int)TopPoint.y,1,(int)(p1.y - TopPoint.y));
-
+  }
+  
+  
   return img;
 }
