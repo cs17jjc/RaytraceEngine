@@ -53,8 +53,8 @@ void draw(){
       PrevY = Y; 
      }
      else{
-       getSeg(new PVector(X,Y), new PVector(PrevX,PrevY));
-       
+       PImage seg = getSeg(new PVector(X,Y), new PVector(PrevX,PrevY));
+       image(seg,X,Y - seg.height,seg.width,seg.height);
      }
      
      
@@ -104,35 +104,40 @@ void DrawSegment(color c,int Dist,float i)
 
 PImage getSeg(PVector p1, PVector p2)
 {
- for(int x = -1; x < 2;x++)
-{
-   for(int y = -1; y < 2;y++)
+  int ClearX = 0;
+  int ClearY = 0;
+  PImage img = createImage(0,0,RGB);
+  for(int x = -1; x < 2;x++)
   {
-     if(x == 0 || y == 0)
-     {
-      if(alpha(Map.get((int)(p1.x + x),(int)(p1.y + y))) == 0){
-         println(x + " : " + y);
+    for(int y = -1; y < 2;y++)
+    {
+       if(x == 0 || y == 0)
+       {
+        if(alpha(Map.get((int)(p1.x + x),(int)(p1.y + y))) == 0){
+           ClearX = x;
+           ClearY = y;
+        }
+       }
+    }
+  }
+  //println(ClearX + " : " + ClearY);
+    boolean EndSeg = false;
+    PVector TopPoint = p1.copy();
+    while(EndSeg == false)
+    {
+      if(alpha(Map.get((int)TopPoint.x,(int)TopPoint.y)) == 0)
+      {
+       EndSeg = true;
       }
-     }
-  } 
-} 
-  
-  return null;
+      else{
+        if(ClearX == 0 && ClearY == 1)
+        {
+         TopPoint.y --;
+        }
+      }
+    }
+    println(p1.y - TopPoint.y);
+    img = Map.get((int)p1.x,(int)TopPoint.y,1,(int)(p1.y - TopPoint.y));
+
+  return img;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
