@@ -1,25 +1,27 @@
 
 
 
-PVector Player = new PVector(3,5);
+PVector Player = new PVector(200,200);
 float Dir = 0;
 float Fov = 45;
 int Segments = 1;
 int SegWidth = 0;
 
-PImage Wall;
+PImage Map;
   
 void setup(){
   size(640,480); 
   background(0);
   noStroke();
-  Wall = loadImage("Wall1.png");
-  SegWidth = (int)(width/(Wall.width/Segments));
+  Map = loadImage("MapImg.png");
+  SegWidth = (int)(width/(2*Fov/Segments));
 }
 
 
 void draw(){
-  background(0);
+  background(0,0,255);
+  float PrevX = -1;
+  float PrevY = -1;
   for(float i = -1*Fov; i <= Fov; i += Segments)
   {
      float Angle = Dir + i;
@@ -32,24 +34,30 @@ void draw(){
      while(hit == false){
        X = Player.x + (Dist * CosX);
        Y = Player.y + (Dist * SinY);
-       //println(X + " + " + Y);
-       if(MapData.Data[(int)X][(int)Y] != 0)
+       if(alpha(Map.get((int)X,(int)Y)) != 0)
        {
           hit = true;
-          if(MapData.Data[(int)X][(int)Y] == 1){
-             DrawSegment(color(255,0,0),Dist,i);
-          }
-          if(MapData.Data[(int)X][(int)Y] == 2){
-             DrawSegment(color(255,150,150),Dist,i);
-          }
        }
        else
        {
          fill(255,0,0);
-         rect(X * 5,Y * 5,5,5);
-        Dist ++;
+         rect(X,Y,1,1);
+         Dist ++;
        }
      }
+     
+     
+     
+     if(PrevX == -1 || PrevY == -1){
+      PrevX = X;
+      PrevY = Y; 
+     }
+     else{
+       getSeg(new PVector(X,Y), new PVector(PrevX,PrevY));
+       
+     }
+     
+     
   }
 }
 
@@ -63,7 +71,6 @@ void keyPressed(){
  {
   Dir -= 5;
  }
- 
  if(key == 'w')
  {
   Player.x += cos((Dir/180)*3.14);
@@ -92,7 +99,25 @@ void DrawSegment(color c,int Dist,float i)
 {
   fill(c);
   float Height = (100/Dist) * (height/100);
-  image(Wall,(i + Fov)*Wall.width,(height/2)-(Height/2),SegWidth,Height);
+  rect((i + Fov)*SegWidth,(height/2)-(Height/2),SegWidth,Height);
+}
+
+PImage getSeg(PVector p1, PVector p2)
+{
+ for(int x = -1; x < 2;x++)
+{
+   for(int y = -1; y < 2;y++)
+  {
+     if(x == 0 || y == 0)
+     {
+      if(alpha(Map.get((int)(p1.x + x),(int)(p1.y + y))) == 0){
+         println(x + " : " + y);
+      }
+     }
+  } 
+} 
+  
+  return null;
 }
 
 
