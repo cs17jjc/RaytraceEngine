@@ -22,6 +22,7 @@ void draw(){
   background(0,0,255);
   float PrevX = -1;
   float PrevY = -1;
+  int CumulativeX = 0;
   for(float i = -1*Fov; i <= Fov; i += Segments)
   {
      float Angle = Dir + i;
@@ -54,7 +55,14 @@ void draw(){
      }
      else{
        PImage seg = getSeg(new PVector(X,Y), new PVector(PrevX,PrevY));
-       image(seg,X,Y - seg.height,seg.width,seg.height);
+       float DrawHeight = (1000/(1 + Dist)) * (height/100);
+       image(seg,CumulativeX,(height/2) - (DrawHeight/2),seg.width,DrawHeight);
+       CumulativeX += seg.width;
+       //println(DrawHeight);
+       //image(seg,X,Y - seg.height,seg.width,seg.height);
+       
+       PrevX = X;
+       PrevY = Y; 
      }
      
      
@@ -120,11 +128,11 @@ PImage getSeg(PVector p1, PVector p2)
        }
     }
   }
-  //println(ClearX + " : " + ClearY);
+  println(ClearX + " : " + ClearY);
+  boolean EndSeg = false;
+  PVector TopPoint = p1.copy();
   if(ClearX == 0 && ClearY == 1)
   {
-    boolean EndSeg = false;
-    PVector TopPoint = p1.copy();
     while(EndSeg == false)
     {
       if(alpha(Map.get((int)TopPoint.x,(int)TopPoint.y)) == 0)
@@ -135,8 +143,22 @@ PImage getSeg(PVector p1, PVector p2)
        TopPoint.y --; 
       }
     }
-    println(p1.y - TopPoint.y);
-    img = Map.get((int)p1.x,(int)TopPoint.y,1,(int)(p1.y - TopPoint.y));
+    img = Map.get((int)p1.x,(int)TopPoint.y,1 + (int)(p1.x - p2.x),(int)(p1.y - TopPoint.y));
+  }
+  
+  if(ClearX == -1 && ClearY == 0)
+  {
+    while(EndSeg == false)
+    {
+      if(alpha(Map.get((int)TopPoint.x,(int)TopPoint.y)) == 0)
+      {
+       EndSeg = true;
+      }
+      else{
+       TopPoint.x ++; 
+      }
+    }
+    img = Map.get((int)p1.x,(int)p1.y,(int)(TopPoint.x - p1.x),(int)1 + (int)(p1.y - p2.y));
   }
   
   
