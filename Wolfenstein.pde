@@ -1,8 +1,6 @@
 PVector Player = new PVector(200,200);
 float Dir = 0;
-float Fov = 45;
-int Segments = 1;
-int SegWidth = 0;
+int Fov = 45;
 
 PImage Map;
   
@@ -11,59 +9,47 @@ void setup(){
   background(0);
   noStroke();
   Map = loadImage("MapImg.png");
-  SegWidth = (int)(width/(2*Fov/Segments));
 }
 
 
 void draw(){
   background(0,0,255);
-  float PrevX = -1;
-  float PrevY = -1;
-  int CumulativeX = 0;
-  for(float i = -1*Fov; i <= Fov; i += Segments)
+  image(Map,0,0);
+  fill(0,255,0);
+  rect(Player.x,Player.y,10,5);
+  for(int i = -1 * Fov; i < Fov; i++)
   {
-     float Angle = Dir + i;
-     int Dist = 0;
-     boolean hit = false;
-     float CosX = cos((Angle/180)*3.14);
-     float SinY = sin((Angle/180)*3.14);
-     float X = 0;
-     float Y = 0;
-     while(hit == false){
-       X = Player.x + (Dist * CosX);
-       Y = Player.y + (Dist * SinY);
-       if(alpha(Map.get((int)X,(int)Y)) != 0)
-       {
-          hit = true;
-       }
-       else
-       {
-         fill(255,0,0);
-         rect(X,Y,1,1);
-         Dist ++;
-       }
+   float Angle =((Dir + i)/180)*PI;
+   boolean Hit = false;
+   float RayX = 0;
+   float RayY = 0;
+   int Dist = 0;
+   while(Hit == false)
+   {
+      RayX = Player.x + (Dist * cos(Angle));
+      RayY = Player.y + (Dist * sin(Angle));
+      fill(255,0,0);
+      rect(RayX,RayY,1,1);
+     if(alpha(Map.get((int)RayX,(int)RayY)) == 255)
+     {
+      Hit = true; 
      }
-     
-     
-     
-     if(PrevX == -1 || PrevY == -1){
-      PrevX = X;
-      PrevY = Y; 
+     else
+     {
+      Dist += 1;
      }
-     else{
-       PImage seg = getSeg(new PVector(X,Y), new PVector(PrevX,PrevY));
-       float DrawHeight = (1000/(1 + Dist)) * (height/100);
-       image(seg,CumulativeX,(height/2) - (DrawHeight/2),seg.width,DrawHeight);
-       CumulativeX += seg.width;
-       //println(DrawHeight);
-       //image(seg,X,Y - seg.height,seg.width,seg.height);
-       
-       PrevX = X;
-       PrevY = Y; 
-     }
-     
-     
+   }
+   float CosI = cos(((float)i/180)*PI);
+   int CorDist = (int)(Dist * CosI); //Correct fisheye lensing.
+   fill(CorDist%255,0,0);
+   rect(RayX-5,RayY-5,10,10);
+   fill(150);
+   float Height = (1000/CorDist) * (height/100);
+   rect((width/2) + (i * 2),(height/2)-(Height/2),2,Height);
+   
   }
+  
+  
 }
 
 
@@ -98,66 +84,4 @@ void keyPressed(){
   Player.y += cos((Dir/180)*3.14);
  }
  
-}
-
-void DrawSegment(color c,int Dist,float i)
-{
-  fill(c);
-  float Height = (100/Dist) * (height/100);
-  rect((i + Fov)*SegWidth,(height/2)-(Height/2),SegWidth,Height);
-}
-
-PImage getSeg(PVector p1, PVector p2)
-{
-  int ClearX = 0;
-  int ClearY = 0;
-  PImage img = createImage(0,0,RGB);
-  for(int x = -1; x < 2;x++)
-  {
-    for(int y = -1; y < 2;y++)
-    {
-       if(x == 0 || y == 0)
-       {
-        if(alpha(Map.get((int)(p1.x + x),(int)(p1.y + y))) == 0){
-           ClearX = x;
-           ClearY = y;
-        }
-       }
-    }
-  }
-  //println(ClearX + " : " + ClearY);
-  boolean EndSeg = false;
-  PVector TopPoint = p1.copy();
-  if(ClearX == 0 && ClearY == 1)
-  {
-    while(EndSeg == false)
-    {
-      if(alpha(Map.get((int)TopPoint.x,(int)TopPoint.y)) == 0)
-      {
-       EndSeg = true;
-      }
-      else{
-       TopPoint.y --; 
-      }
-    }
-    img = Map.get((int)p1.x,(int)TopPoint.y,1 + (int)(p1.x - p2.x),(int)(p1.y - TopPoint.y));
-  }
-  
-  if(ClearX == -1 && ClearY == 0)
-  {
-    while(EndSeg == false)
-    {
-      if(alpha(Map.get((int)TopPoint.x,(int)TopPoint.y)) == 0)
-      {
-       EndSeg = true;
-      }
-      else{
-       TopPoint.x ++; 
-      }
-    }
-    img = Map.get((int)p1.x,(int)p1.y,(int)(TopPoint.x - p1.x),(int)(p1.y - p2.y));
-  }
-  
-  
-  return img;
 }
