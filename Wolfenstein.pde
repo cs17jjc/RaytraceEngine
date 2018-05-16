@@ -1,6 +1,3 @@
-
-
-
 PVector Player = new PVector(200,200);
 float Dir = 0;
 float Fov = 45;
@@ -128,7 +125,7 @@ PImage getSeg(PVector p1, PVector p2)
        }
     }
   }
-  println(ClearX + " : " + ClearY);
+  //println(ClearX + " : " + ClearY);
   boolean EndSeg = false;
   PVector TopPoint = p1.copy();
   if(ClearX == 0 && ClearY == 1)
@@ -158,7 +155,7 @@ PImage getSeg(PVector p1, PVector p2)
        TopPoint.x ++; 
       }
     }
-    img = Map.get((int)p1.x,(int)p1.y,(int)(TopPoint.x - p1.x),(int)1 + (int)(p1.y - p2.y));
+    img = Map.get((int)p1.x,(int)p1.y,(int)(TopPoint.x - p1.x),(int)(p1.y - p2.y));
   }
   
   
