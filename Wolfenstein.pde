@@ -1,7 +1,7 @@
 PVector Player = new PVector(200,200);
 float Dir = 0;
 int Fov = 45;
-
+int SegWidth = 0;
 PImage Map;
   
 void setup(){
@@ -9,14 +9,18 @@ void setup(){
   background(0);
   noStroke();
   Map = loadImage("MapImg.png");
+  SegWidth = width/(2*Fov);
+  println(SegWidth);
 }
 
 
 void draw(){
-  background(0,0,255);
-  image(Map,0,0);
-  fill(0,255,0);
-  rect(Player.x,Player.y,10,5);
+  background(100,100,100);
+  fill(150,0,0);
+  rect(0,height/2,width,height);
+  //image(Map,0,0);
+  //fill(0,255,0);
+  //rect(Player.x,Player.y,10,5);
   for(int i = -1 * Fov; i < Fov; i++)
   {
    float Angle = DegToRad(Dir + i);
@@ -28,8 +32,8 @@ void draw(){
    {
       RayX = Player.x + (Dist * cos(Angle));
       RayY = Player.y + (Dist * sin(Angle));
-      fill(255,0,0);
-      rect(RayX,RayY,1,1);
+      //fill(255,0,0);
+      //rect(RayX,RayY,1,1);
      if(alpha(Map.get((int)RayX,(int)RayY)) == 255)
      {
       Hit = true; 
@@ -42,8 +46,7 @@ void draw(){
    int CorDist = (int)(Dist * cos(DegToRad((float)i))); //Correct fisheye lensing.
    fill(150);
    int Height = floor(height/(1 + abs(CorDist)));
-   rect((width/2) + (i * 2),(height/2)-(Height/2),2,Height);
-   
+   rect((width/2) - ((i+1) * SegWidth),(height/2)-(Height/2),SegWidth,Height);
   }
   
   
