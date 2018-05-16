@@ -89,3 +89,12 @@ float DegToRad(float i)
 {
  return (i/180)*PI;
 }
+
+PImage GetSeg(int X, int Y)
+{
+  
+  
+  
+  return null;
+  
+}
